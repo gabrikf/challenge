@@ -1,7 +1,11 @@
+import Button from '@material-ui/core/Button'
+import Routes from './routes'
+
 
 function App() {
   return (
-   <h1>Hello @gabrikf</h1>
+ <Routes />
+   
   );
 }
 
