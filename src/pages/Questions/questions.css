@@ -1,0 +1,15 @@
+.flex-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 300px;
+    gap: 10px;
+}

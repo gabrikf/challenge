@@ -1,10 +1,11 @@
-
-import Routes from './routes'
-
+import Routes from "./routes";
+import { QuestionsContextProvider } from "./context/QuestionsContext";
 
 function App() {
   return (
- <Routes />
+    <QuestionsContextProvider>
+      <Routes />
+    </QuestionsContextProvider>
   );
 }
 
