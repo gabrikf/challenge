@@ -97,7 +97,6 @@ const Questions = () => {
           </div>
         </div>
       ) : (
-        <div className='flex-item'>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
               <Grid item xs={6} sm={6} md={6}>
@@ -144,7 +143,6 @@ const Questions = () => {
               </Grid>
             </Grid>
           </Box>
-        </div>
       )}
     </>
   );
