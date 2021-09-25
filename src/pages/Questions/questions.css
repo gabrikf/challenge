@@ -5,6 +5,19 @@
     height: 100vh;
     
 }
+.flex-item-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+   
+}
+.div-size {
+    max-width: 300px;
+    text-align: left;
+    margin-top: 25px;
+}
 
 .buttons {
     display: flex;
