@@ -7,34 +7,33 @@ import {
   Button,
   Box,
   Grid,
-} from "@material-ui/core";
-import api from "../../services/api";
-import { useState } from "react";
-import { useHistory } from "react-router";
-import "./questions.css";
-import useQuestions from "../../hooks/useQuestionContext";
+} from '@material-ui/core';
+import api from '../../services/api';
+import { useState } from 'react';
+import { useHistory } from 'react-router';
+import './questions.css';
+import useQuestions from '../../hooks/useQuestionContext';
+import { useFormik } from 'formik';
+import { QuestionsType } from '../../context/QuestionsContext';
 
-type QuestionsType = {
-  category: string;
-  correct_answer: string;
-  difficulty: string;
-  incorrect_answers: string[];
-  answers: string[];
-  question: string;
-  type: string;
-};
 
+
+
+type FormikValues = {
+  [key: string]: string
+}
 const Questions = () => {
   const [buttons, setButtons] = useState(true);
   const [questions, setQuestions] = useState<QuestionsType[]>([]);
+  const [values, setValues] = useState<FormikValues>({})
   const history = useHistory();
-  const { quantity } = useQuestions();
+  const { quantity, handleSetAnswers } = useQuestions();
   const handleStartQuestions = async () => {
     setButtons(false);
     await api.get(`api.php?amount=${quantity}`).then((response) => {
       let newQuestions = response.data.results.map((value: any) => {
         let result = value.incorrect_answers;
-
+        
         result.push(value.correct_answer);
 
         return {
@@ -42,33 +41,60 @@ const Questions = () => {
           answers: result.sort((v1: any, v2: any) => v1.localeCompare(v2)),
         };
       });
+      questions.map((a: any)=> (
 
+        setValues({
+          [a.question]: ''
+        } 
+      
+      )))
+        console.log(newQuestions)
       setQuestions(newQuestions);
     });
   };
 
+
+  const formik = useFormik({
+    initialValues: 
+    values
+    ,
+    enableReinitialize: true,
+    onSubmit: async (value : any) => {
+      let responses : any = questions.map((item: QuestionsType, index) => {
+         let val: any = value[item.question + item.correct_answer]
+        return {
+          ...item,
+          responses: val
+        }
+      })
+      handleSetAnswers(responses)
+      history.push('report')
+    },
+  });
+
+
   return (
     <>
       {buttons ? (
-        <div className="flex-item">
-          <div className="buttons">
+        <div className='flex-item'>
+          <div className='buttons'>
             <Button
               onClick={handleStartQuestions}
-              className="btns"
-              color="primary"
-              variant="contained"
+              className='btns'
+              color='primary'
+              variant='contained'
               fullWidth
-              type="button"
+              type='button'
             >
               Start
             </Button>
             <Button
-              onClick={() => history.push("/")}
-              className="btns"
-              color="primary"
-              variant="contained"
+              onClick={() => history.push('/')}
+              className='btns'
+              color='primary'
+              variant='contained'
               fullWidth
-              type="button"
+              type='button'
             >
               Cancel
             </Button>
@@ -77,26 +103,46 @@ const Questions = () => {
       ) : (
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
-            {questions.map((item: QuestionsType, index: Number) => (
+         
               <Grid item xs={6} sm={6} md={6}>
-                <FormControl component="fieldset">
-                  <FormLabel component="legend">Gender</FormLabel>
-                  <RadioGroup
-                    aria-label="gender"
-                    defaultValue="female"
-                    name="radio-buttons-group"
+                <form onSubmit={formik.handleSubmit}>
+                {questions.map((item: QuestionsType, index: Number) => (
+                  <div key={String(index)}>
+                  <FormControl component='fieldset'>
+                
+                    
+                    <FormLabel component='legend'>{(item.question)}</FormLabel>
+                    <RadioGroup
+                      aria-label='gender'
+                      defaultValue='female'
+                      name={item.question + item.correct_answer}
+                      value={formik.values[item.question + item.correct_answer] ? formik.values[item.question + item.correct_answer] : ''}
+                      onChange={formik.handleChange}
+                    >
+                      {item.answers.map((value: any, index: Number) => (
+                        <FormControlLabel
+                          key={String(index)}
+                          value={value}
+                          control={<Radio />}
+                          label={value}
+                        />
+                      ))}
+                    </RadioGroup>
+                    
+                  </FormControl>
+                  </div>
+                  ))}
+                  <Button
+                    color='primary'
+                    variant='contained'
+                    fullWidth
+                    type='submit'
                   >
-                    {item.answers.map((value: any, index: Number) => (
-                      <FormControlLabel
-                        value={index.toString()}
-                        control={<Radio />}
-                        label={value}
-                      />
-                    ))}
-                  </RadioGroup>
-                </FormControl>
+                    Submit
+                  </Button>
+                </form>
               </Grid>
-            ))}
+           
           </Grid>
         </Box>
       )}

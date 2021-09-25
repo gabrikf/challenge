@@ -6,6 +6,18 @@ type QuestionsContextProviderProps = {
 type QuestionContextType = {
   quantity: string;
   handleSetQuantity: (val: string) => void;
+  answers: QuestionsType[];
+  handleSetAnswers: (val: QuestionsType[]) => void;
+};
+export type QuestionsType = {
+  category: string;
+  correct_answer: string;
+  difficulty: string;
+  incorrect_answers: string[];
+  answers: string[];
+  question: string;
+  type: string;
+  responses: Object | undefined;
 };
 
 export const QuestionContext = createContext({} as QuestionContextType);
@@ -13,21 +25,27 @@ export const QuestionContext = createContext({} as QuestionContextType);
 export function QuestionsContextProvider(props: QuestionsContextProviderProps) {
 
   const [quantity, setQuantity] = useState('');
-
+  const [answers, setAnswers] = useState<any>([]);
   useEffect(() => {
-    const quantityVal = localStorage.getItem('token')
-    if(quantityVal){
-        setQuantity(quantityVal)
+    let answer = localStorage.getItem('answers')
+    if(answer){
+    answer = JSON.parse(answer)
+      setAnswers(answer)
+        
     }
-  }, [quantity]);
+  }, []);
 
   const handleSetQuantity = (val: string) => {
       setQuantity(val)
-      localStorage.setItem('quantity', quantity);
   }
+  const handleSetAnswers = (val: QuestionsType[]) => {
+    setAnswers(val)
+    localStorage.setItem('answers', JSON.stringify(val));
+
+}
 
   return (
-    <QuestionContext.Provider value={{ quantity, handleSetQuantity }}>
+    <QuestionContext.Provider value={{ quantity, handleSetQuantity, answers, handleSetAnswers}}>
       {props.children}
     </QuestionContext.Provider>
   );

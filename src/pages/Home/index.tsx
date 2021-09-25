@@ -5,14 +5,22 @@ import TextField from "@material-ui/core/TextField";
 import './home.css'
 import useQuestions from '../../hooks/useQuestionContext'
 import { useHistory } from 'react-router-dom'
+import { useEffect, useState } from "react";
 
 
 const quantitySchema = Yup.object().shape({quantity: Yup.number().required('Esse campo é obrigatório')})
 
 const Home = () => {
-
+  const [resps, setResps] = useState(false)
+  const { handleSetQuantity } = useQuestions()
+  useEffect(() => {
+    const resp = localStorage.getItem('answers')
+    if(resp){
+      setResps(true)
+    }
+  },[])
   const history = useHistory()
-const { handleSetQuantity } = useQuestions()
+
   const formik = useFormik({
     initialValues: {
       quantity: '',
@@ -43,6 +51,11 @@ const { handleSetQuantity } = useQuestions()
         <Button color="primary" variant="contained" fullWidth type="submit">
           Submit
         </Button>
+{resps &&
+        <Button sx={{marginTop: '10px'}} color="primary" variant="contained" fullWidth onClick={() => history.push('report')}>
+          Last Result
+        </Button>
+}
       </form>
     </div>
   
